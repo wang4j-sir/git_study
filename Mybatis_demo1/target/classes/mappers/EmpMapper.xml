@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mybatis.mapper.EmpMapper">
+
+    <resultMap id="empdeptResult" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+<!--        <result property="dept.did" column="did"></result>-->
+<!--        <result property="dept.deptName" column="dept_name"></result>-->
+        <association property="dept" javaType="Dept">
+            <id property="did" column="did"></id>
+            <result property="deptName" column="dept_name"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="findEmpByOne" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+        <association property="dept"
+                     select="com.atguigu.mybatis.mapper.DeptMapper.findDeptByStepTwo"
+                     column="did">
+        </association>
+    </resultMap>
+
+
+<!--    List<Emp> findEmpList();-->
+    <select id="findEmpListOld" resultType="com.atguigu.mybatis.pojo.Emp">
+        select * from t_emp
+--          select eid,emp_name,age,sex,email from t_emp
+    </select>
+
+
+<!--    <select id="findEmpList" resultMap="empResult">-->
+<!--        select * from t_emp-->
+<!--&#45;&#45;          select eid,emp_name,age,sex,email from t_emp-->
+<!--    </select>-->
+
+<!--    Emp findEmpAndDept(@Param("empId") int empId);-->
+    <select id="findEmpAndDept" resultMap="empdeptResult">
+        select * from t_emp left join t_dept on t_emp.did = t_dept.did where t_emp.did = #{empdid}
+    </select>
+
+<!--    Emp findEmpByStepOne(@Param("empId") Integer empId);-->
+     <select id="findEmpByStepOne" resultMap="findEmpByOne">
+         select * from t_emp where t_emp.eid = #{empId}
+     </select>
+
+<!--    List<Emp> getEmpByIf(Emp emp);-->
+    <select id="getEmpByIf" resultType="Emp">
+        select * from t_emp
+            <where>
+                <choose>
+                    <when test="empName != null and empName != ''">
+                        emp_name = #{empName}
+                    </when>
+                    <when test="age != null and age != ''">
+                        age = #{age}
+                    </when>
+                    <when test="sex != null and sex != ''">
+                        sex = #{sex}
+                    </when>
+                    <when test="email != null and email != ''">
+                        email = #{email}
+                    </when>
+                    <otherwise>
+                        did = #{did}
+                    </otherwise>
+                </choose>
+            </where>
+    </select>
+
+<!--    int deleteEmpBatch(@Param("eids") Integer[] eids);-->
+    <delete id="deleteEmpBatch">
+        delete from t_emp where
+       <foreach collection="eids" item="eid" separator="or">
+          eid = #{eid}
+       </foreach>
+    </delete>
+
+<!--    int addEmpBatch(@Param("emps") List<Emp> emps);-->
+    <insert id="addEmpBatch">
+        insert into t_emp values
+       <foreach collection="emps" item="emp" separator=",">
+           (null,#{emp.empName}, #{emp.age}, #{emp.sex}, #{emp.email},null)
+       </foreach>
+    </insert>
+
+    <sql id="findEmpColums">emp_name, age, sex, email</sql>
+
+<!--    Emp findEmp(@Param("eid") Integer eid);-->
+    <select id="findEmp" resultType="Emp">
+        select <include refid="findEmpColums"/> from t_emp where eid = #{eid}
+    </select>
+</mapper>

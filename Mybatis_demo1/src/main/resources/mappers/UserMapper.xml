@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mybatis.mapper.UserMapper">
+    <!--int insertUser();-->
+    <insert id="insertUser">
+        insert into t_user values(null,'张三','123',23,'女',"178756@qq.com")
+    </insert>
+
+<!--    void updateUser();-->
+    <update id="updateUser">
+        update t_user set t_user.username = "李四" where id = 2;
+    </update>
+
+<!--    void deleteUser();-->
+    <delete id="deleteUser">
+        delete from t_user where id =2
+    </delete>
+
+<!--    User findAllUser();-->
+    <select id="findAllUser" resultType="com.atguigu.mybatis.pojo.User">
+        select * from t_user;
+    </select>
+
+<!--    User findUserByName();-->
+    <select id="findUserByName" resultType="com.atguigu.mybatis.pojo.User">
+        select * from t_user where t_user.userName = #{param1} and t_user.passWord = #{param2}
+    </select>
+
+<!--    int addUser(User user);-->
+    <insert id="addUser">
+        insert into t_user values(null,#{userName},#{passWord},#{age},#{sex},#{email})
+    </insert>
+
+<!--    User findUser(String username, String password);-->
+    <select id="findUser" resultType="com.atguigu.mybatis.pojo.User">
+        select * from t_user where t_user.userName = #{username} and t_user.passWord = #{password};
+    </select>
+
+<!--    Map<String,Object> findUserMap(@Param("username") String username, @Param("password") String password);-->
+    <select id="findUserMap" resultType="map">
+        select * from t_user where t_user.userName = #{username} and t_user.passWord = #{password};
+    </select>
+
+<!--    List<Map<String,Object>> findUserMapList();-->
+    <select id="findUserMapList" resultType="map">
+        select * from t_user
+    </select>
+
+<!--    List<User> selectUserLike(@Param("username") String username);-->
+    <select id="selectUserLike" resultType="com.atguigu.mybatis.pojo.User">
+        select * from t_user where username like "%" #{username} "%"
+    </select>
+
+<!--    void delete(@Param("ids") String ids);-->
+    <delete id="delete">
+        delete from t_user where id in (${ids})
+    </delete>
+</mapper>
